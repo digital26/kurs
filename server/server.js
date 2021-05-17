@@ -18,7 +18,7 @@ mongoose
     .connect(process.env.DATABASE, {
     useNewUrlParser: true,
     useCreateIndex: true,
-    useFindAndModify: true,
+    useFindAndModify: false,
     useUnifiedTopology: true
     })
     .then(() => console.log("DB CONNECTED"))
@@ -36,4 +36,4 @@ readdirSync('./routes').map((r) => app.use('/api', require("./routes/" + r)));
 //port
 const port = process.env.PORT || 8000;
 
-app.listen(port, () => console.log(`Server is runnin g on port ${port}`));
+app.listen(port, () => console.log(`Server is running on port ${port}`));

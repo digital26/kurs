@@ -1,56 +1,84 @@
-import React, {useState} from 'react';
-import {Menu} from 'antd';
-import { AppstoreOutlined, SettingOutlined, UserOutlined, UserAddOutlined, LogoutOutlined } from '@ant-design/icons';
-import {Link} from "react-router-dom";
+import React, { useState } from "react";
+import { Menu } from "antd";
+import {
+  AppstoreOutlined,
+  SettingOutlined,
+  UserOutlined,
+  UserAddOutlined,
+  LogoutOutlined,
+} from "@ant-design/icons";
+import { Link } from "react-router-dom";
 import firebase from "firebase";
-import {useDispatch, useSelector} from "react-redux";
-import {useHistory} from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 
-const { SubMenu, Item } = Menu; //Menu.SubMenu
+const { SubMenu, Item } = Menu;
 
 const Header = () => {
-    const [current, setCurrent] = useState('home');
-    let dispatch = useDispatch();
-    let {user} = useSelector((state) => ({...state})); 
-    let history = useHistory();
+  const [current, setCurrent] = useState("home");
 
-    const handleClick = (e) => {
-      //console.log(e.key);
-      setCurrent(e.key);
-    }
+  let dispatch = useDispatch();
+  let { user } = useSelector((state) => ({ ...state }));
 
-    const logout = () => {
-      firebase.auth().signOut()
-      dispatch({
-        type: "LOGOUT",
-        payload: null,
-      });
-      history.push("/login")
-    };
+  let history = useHistory();
 
-    return (
-        <Menu onClick={handleClick}  mode="horizontal">
+  const handleClick = (e) => {
+    // console.log(e.key);
+    setCurrent(e.key);
+  };
 
-          <Item key="home" icon={<AppstoreOutlined />}>
-            <Link to="/"> Home </Link>
-          </Item>
+  const logout = () => {
+    firebase.auth().signOut();
+    dispatch({
+      type: "LOGOUT",
+      payload: null,
+    });
+    history.push("/login");
+  };
 
-          {user && (<SubMenu key="SubMenu" icon={<SettingOutlined />} title={user.email && user.email.split('@')[0]} className="pomjeranjeDesno">
-            <Item key="setting:1">Option 1</Item>
-            <Item key="setting:2">Option 2</Item>
-            <Item icon={<LogoutOutlined />} onClick={logout}>Logout</Item>
-          </SubMenu>)}
-        
-          {!user && (<Item key="register" icon={<UserAddOutlined />} className="pomjeranjeDesno">
-            <Link to="/register"> Register </Link>
-          </Item>)}
+  return (
+    <Menu onClick={handleClick} selectedKeys={[current]} mode="horizontal">
+      <Item key="home" icon={<AppstoreOutlined />}>
+        <Link to="/">Home</Link>
+      </Item>
+
+      {user && (
+        <SubMenu
+          icon={<SettingOutlined />}
+          title={user.email && user.email.split("@")[0]}
+          className="float-right"
+        >
+
+          {user && user.role === 'subscriber' && (
+            <Item>
+              <Link to="/user/history"> Dashboard </Link>
+            </Item>)}
+
+          {user && user.role === 'admin' && (
+            <Item>
+              <Link to="/admin/dashboard"> Admin dashboard </Link>
+            </Item>)}
           
-          {!user && (<Item key="login" icon={<UserOutlined />} className="pomjeranjeDesno">
-            <Link to="/login"> Login </Link>
-          </Item>)}
-    
-        </Menu>
-      );
+          
+          <Item icon={<LogoutOutlined />} onClick={logout}>
+            Logout
+          </Item>
+        </SubMenu>
+      )}
+
+{!user && (
+        <Item key="register" icon={<UserAddOutlined />} className="float-right">
+          <Link to="/register">Register</Link>
+        </Item>
+      )}
+
+      {!user && (
+        <Item key="login" icon={<UserOutlined />} className="float-right">
+          <Link to="/login">Login</Link>
+        </Item>
+      )}
+    </Menu>
+  );
 };
 
 export default Header;
